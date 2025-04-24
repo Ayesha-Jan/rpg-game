@@ -1,4 +1,7 @@
 from combat import player_attack
+import time
+from world import print_world, print_room_description
+from utils import move_player
 
 
 class Player:
@@ -44,29 +47,43 @@ class Player:
         for key, value in self.inventory.items():
             print(f"- {key}: {value}")
 
-    def use_item(self, item, enemy = None):
+    def use_item(self, item, player_x = None, player_y = None, enemy = None):
         match item:
             case "Health Potion":
-                self.health += 20
-                print("You have gained 20hp!")
+                if self.health < 130:
+                    self.health += 20
+                    print("You have gained 20hp!")
+                    del self.inventory[item]
+                else:
+                    print("Your hp is already full!")
             case "Berserker Charm":
                 self.attack += 20
                 print("Your attack power has increased by 20!")
+                del self.inventory[item]
             case "Mana Potion":
                 self.attack += 30
                 print("Your attack power has increased by 30!")
+                del self.inventory[item]
             case "Fire Scroll":
                 self.attack = 110
                 print("You have used the Fire Scroll!")
                 if enemy:
                     player_attack(self, enemy)
                 self.attack = 80
+                del self.inventory[item]
             case "Smoke Bomb":
-                pass
+                print("The smoke bomb has been used! You can flee from battle!")
+                print("Choose where you wish to run: ")
+                print_world(player_x, player_y)
+                time.sleep(3)
+                player_x, player_y = move_player(player_x, player_y)
+                print_room_description(player_x, player_y)
+                time.sleep(3)
+                del self.inventory[item]
             case "Throwing Knives":
                 self.attack = 130
                 print("You have used Throwing Knives!")
                 if enemy:
                     player_attack(self, enemy)
                 self.attack = 100
-        del self.inventory[item]
+                del self.inventory[item]

@@ -2,7 +2,7 @@ import time
 from player import Player
 from enemy import Enemy
 import random
-from utils import choose_class_type, menu, choose_move, move_player
+from utils import choose_class_type, menu, move_player
 from world import print_world, print_room_description
 from combat import player_attack, enemy_attack
 
@@ -75,12 +75,15 @@ def main():
                     time.sleep(2)
 
             elif choice == "2":
-                player.print_inventory()
-                item = input("Select an item: ").title()
-                while item not in player.inventory:
-                    print("Item not available.")
+                if player.inventory:
+                    player.print_inventory()
                     item = input("Select an item: ").title()
-                player.use_item(item, enemy)
+                    while item not in player.inventory:
+                        print("Item not available.")
+                        item = input("Select an item: ").title()
+                    player.use_item(item, player_x, player_y, enemy)
+                else:
+                    print("You have no items left!")
 
             else:
                 if player.speed > enemy.speed:
@@ -94,8 +97,6 @@ def main():
                     battle_over = True
                 else:
                     print("You are slower than the enemy and cannot run!")
-                    choice = menu()
-                    battle_over = True
 
         if not player.is_alive():
             break
